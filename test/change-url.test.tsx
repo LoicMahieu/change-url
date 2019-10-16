@@ -68,4 +68,24 @@ describe('change-url', () => {
       }))
     ).toEqual('http://localhost/overwrite?bim=bar');
   });
+
+  it('works with url object', () => {
+    expect(
+      changeUrl(
+        {
+          pathname: '/bim',
+          query: {
+            foo: 'bizz',
+          },
+        },
+        url => ({
+          ...url,
+          query: {
+            ...url.query,
+            added: 'overwrite',
+          },
+        })
+      )
+    ).toEqual('/bim?foo=bizz&added=overwrite');
+  });
 });

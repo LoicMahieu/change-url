@@ -1,20 +1,28 @@
-import querystring from 'querystring';
-import { parse, format, UrlWithStringQuery } from 'url';
+import querystring, { ParsedUrlQuery, ParsedUrlQueryInput } from 'querystring';
+import { parse, format, UrlWithParsedQuery, UrlObject } from 'url';
 import omit from 'lodash/omit';
 
 interface Url
   extends Omit<
-    UrlWithStringQuery,
+    UrlWithParsedQuery,
     'query' | 'host' | 'path' | 'href' | 'search'
   > {
-  query?: querystring.ParsedUrlQuery;
+  query?: ParsedUrlQuery | ParsedUrlQueryInput;
 }
 
-export const changeUrl = (uri: string, change: (url: Url) => Url) => {
-  const parsed = parse(uri);
-  const url = {
+export const changeUrl = (
+  uri: string | UrlObject,
+  change: (url: Url) => Url
+) => {
+  const parsed = typeof uri === 'object' ? uri : parse(uri);
+  const url: Url = {
     ...omit(parsed, 'query', 'host', 'path', 'href', 'search'),
-    query: parsed.query ? querystring.parse(parsed.query) : undefined,
+    port: parsed.port ? `${parsed.port}` : undefined,
+    query: parsed.query
+      ? typeof parsed.query === 'object'
+        ? parsed.query
+        : querystring.parse(parsed.query)
+      : undefined,
   };
   const changed = change(url);
   return format(changed);
