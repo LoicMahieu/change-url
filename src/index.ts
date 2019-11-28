@@ -16,7 +16,7 @@ export const changeUrl = (
 ) => {
   const parsed = typeof uri === 'object' ? uri : parse(uri);
   const url: Url = {
-    ...omit(parsed, 'query', 'host', 'path', 'href', 'search'),
+    ...omit(parsed, ['query', 'host', 'path', 'href', 'search']),
     port: parsed.port ? `${parsed.port}` : undefined,
     query: parsed.query
       ? typeof parsed.query === 'object'
